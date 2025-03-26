@@ -1,0 +1,8 @@
+{
+  "Token": "YOUR_DISCORD_BOT_TOKEN",
+  "ChannelId": 123456789012345678,
+  "NumberUID":123456789123456789,
+  "DriveLetter": "D",
+  "ThresholdGB": 100,
+  "CheckMin":30
+}
