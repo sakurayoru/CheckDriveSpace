@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -43,7 +44,7 @@ class Program
 
         if (freeSpaceGB < _config.ThresholdGB)
         {
-            SendDiscordNotification($"<@{_config.NumberUID}> 警告: {_config.DriveLetter} の空き容量が {freeSpaceGB}GB です！");
+            SendDiscordNotification($"<@{_config.NumberUID}> 警告: __**{Dns.GetHostName()}**__に搭載されている__**{_config.DriveLetter}ドライブ**__の空き容量が __**{freeSpaceGB}GB**__ です！");
         }
     }
 
