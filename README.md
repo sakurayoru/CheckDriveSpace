@@ -20,6 +20,7 @@ DiscordWebHookに切り替え。
 __**[v1.1.0](https://github.com/sakurayoru/CheckDriveSpace/releases/tag/v1.1.0)**__
 
 ホストネームを表示するようにした。
+
 __**[v1.0.0](https://github.com/sakurayoru/CheckDriveSpace/releases/tag/v1.0.0)**__
 
 1st relese
