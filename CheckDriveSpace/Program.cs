@@ -1,33 +1,26 @@
 ﻿using System;
-using System.Net;
 using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Discord;
-using Discord.WebSocket;
 
 class Program
 {
-    private static DiscordSocketClient _client;
     private static BotConfig _config;
+    private static readonly HttpClient _httpClient = new HttpClient();
 
     static async Task Main(string[] args)
     {
         // 設定ファイルの読み込み
         LoadConfig();
 
-        // Discordクライアントの初期化
-        _client = new DiscordSocketClient();
-        _client.Log += LogAsync;
-
-        await _client.LoginAsync(TokenType.Bot, _config.Token);
-        await _client.StartAsync();
-
         // 定期的にドライブ容量をチェック
         while (true)
         {
             CheckDriveSpace();
-            await Task.Delay(TimeSpan.FromMinutes(_config.CheckMin)); // 10分ごとにチェック
+            await Task.Delay(TimeSpan.FromMinutes(_config.CheckMin)); // config指定時間分ごとにチェック
         }
     }
 
@@ -44,30 +37,35 @@ class Program
 
         if (freeSpaceGB < _config.ThresholdGB)
         {
-            SendDiscordNotification($"<@{_config.NumberUID}> 警告: __**{Dns.GetHostName()}**__に搭載されている__**{_config.DriveLetter}ドライブ**__の空き容量が __**{freeSpaceGB}GB**__ です！");
+            SendDiscordWebhook($"<@{_config.NumberUID}> 警告: __**{Dns.GetHostName()}**__に搭載されている__**{_config.DriveLetter}ドライブ**__の空き容量が __**{freeSpaceGB}GB**__ です！");
         }
     }
 
-    static async void SendDiscordNotification(string message)
+    static async void SendDiscordWebhook(string message)
     {
-        var channel = _client.GetChannel(_config.ChannelId) as IMessageChannel;
-        if (channel != null)
+        var payload = new
         {
-            await channel.SendMessageAsync(message);
-        }
-    }
+            content = message
+        };
 
-    static Task LogAsync(LogMessage log)
-    {
-        Console.WriteLine(log);
-        return Task.CompletedTask;
+        string jsonPayload = JsonConvert.SerializeObject(payload);
+        var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+        try
+        {
+            await _httpClient.PostAsync(_config.WebhookUrl, content);
+            Console.WriteLine($"{DateTime.Now} 通知を送ります");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Webhook送信エラー: {ex.Message}");
+        }
     }
 }
 
 class BotConfig
 {
-    public string Token { get; set; }
-    public ulong ChannelId { get; set; }
+    public string WebhookUrl { get; set; }
     public ulong NumberUID { get; set; }
     public string DriveLetter { get; set; }
     public long ThresholdGB { get; set; }

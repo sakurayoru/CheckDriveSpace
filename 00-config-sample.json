@@ -1,7 +1,6 @@
 {
-  "Token": "YOUR_DISCORD_BOT_TOKEN",
-  "ChannelId": 123456789012345678,
-  "NumberUID":123456789123456789,
+  "WebhookUrl": "https://discord.com/api/webhooks/your_webhook_id/your_webhook_token",
+  "NumberUID":YOUR_Discord_Number_ID,
   "DriveLetter": "D",
   "ThresholdGB": 100,
   "CheckMin":30
